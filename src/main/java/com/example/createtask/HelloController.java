@@ -71,7 +71,7 @@ public void removeNext(){
         translateTransition.setInterpolator(Interpolator.LINEAR);
         translateTransition.setNode(bullets.getLast());
 
-        System.out.println("test");
+
 
         double newRotation;
         System.out.println("Rotation" + (rotation + 90));
