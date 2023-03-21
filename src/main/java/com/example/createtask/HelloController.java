@@ -44,12 +44,6 @@ public class HelloController {
 
     LinkedList<Circle> bullets = new LinkedList<>();
 
-
-
-
-
-
-
 public void printPos(Circle bullet){
     System.out.println(" Layout X: " + bullet.getTranslateX() + " Layout Y: " + bullet.getTranslateY());
 }
@@ -67,26 +61,28 @@ public void removeNext(){
     viewPort.getChildren().add(bullets.getLast());
 
         TranslateTransition translateTransition = new TranslateTransition();
-        translateTransition.setDuration(Duration.millis(20000));
+        translateTransition.setDuration(Duration.millis(3500));
         translateTransition.setInterpolator(Interpolator.LINEAR);
         translateTransition.setNode(bullets.getLast());
 
 
 
-        double newRotation;
-        System.out.println("Rotation" + (rotation + 90));
-        if ((rotation+90) <= 0){
-            newRotation = -(rotation +90);
-        }else{
-            newRotation = -rotation +90;
-        }
-        System.out.println(newRotation);
-        System.out.println("Translate to X: " + (Math.sin(Math.toRadians(newRotation))) * 600);
-        System.out.println("Translate to Y: " + Math.cos(Math.toRadians(newRotation)) * -600);
+        double newX = diffX;
+        double newY = diffY;
+        boolean done = false;
 
-        translateTransition.setByX((Math.sin(Math.toRadians(newRotation))) * 600);
-        System.out.println("Sin = " + (Math.sin(Math.toRadians(newRotation))));
-        translateTransition.setByY(Math.cos(Math.toRadians(newRotation)) * -600);
+        while(!done){
+            newX = newX*1.5;
+            newY = newY*1.5;
+
+            if (Math.abs(newX) > 300 || Math.abs(newY) > 600){
+                done = true;
+            }
+        }
+        System.out.println("newX: " + newX + "NewY: " + newY);
+
+        translateTransition.setByX(newX);
+        translateTransition.setByY(newY);
         translateTransition.setOnFinished(e -> removeNext());
         translateTransition.setCycleCount(0);
 

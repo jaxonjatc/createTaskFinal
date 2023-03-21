@@ -38,11 +38,17 @@ public class Bullet extends Circle {
     }
 
 
-    public boolean isTouching(double top, double left, double right, double bottom){
+    public boolean isTouchingSquare(double top, double left, double right, double bottom){
 
 
 
         return (getRealPositionX() -radius >= left && getRealPositionX()+radius <= right) && (getRealPositionY()-radius >= top && getRealPositionY()+radius <= bottom);
+
+    }
+
+    public boolean isTouchingCircle(double x, double y, double radius){
+
+        return Math.abs(getRealPositionX() - x) < radius && Math.abs(getRealPositionY() - y) < radius;
 
     }
 
