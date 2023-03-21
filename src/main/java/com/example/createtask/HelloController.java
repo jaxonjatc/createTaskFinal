@@ -21,6 +21,32 @@ import java.util.*;
 
 public class HelloController {
 
+
+
+    /*
+
+    Things to still implement
+
+    Easy
+    -Waves of enemies of increasing difficulty (quantity and speed)
+    -Score counter
+    -possible Better collision detection
+    (Up the tick speed and just multiply the odds of spawning
+    (create variable for default odds))
+
+    Medium
+    -Weapon selection
+    Make the bullet spawner take rotation as a parameter
+    give it that parameter in the click method
+    change the click method to do it based on which button was clicked before each new game
+    -Add background art and make enemies/ammo/character more interesting looking
+
+    Hard
+    -Make it work on any screen size
+
+
+     */
+
     @FXML
     AnchorPane viewPort;
     @FXML
