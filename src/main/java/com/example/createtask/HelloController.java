@@ -2,6 +2,7 @@ package com.example.createtask;
 
 import javafx.animation.Interpolator;
 import javafx.animation.TranslateTransition;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.event.EventType;
@@ -41,23 +42,47 @@ public class HelloController {
 
     double rotation = 90;
 
+    Random random = new Random();
 
-    LinkedList<Circle> bullets = new LinkedList<>();
+    int odds = 8;
 
-public void printPos(Circle bullet){
-    System.out.println(" Layout X: " + bullet.getTranslateX() + " Layout Y: " + bullet.getTranslateY());
-}
-public void removeNext(){
-    viewPort.getChildren().remove(bullets.getFirst());
-    bullets.removeFirst();
+    boolean gameOver = true;
 
 
+    LinkedList<Bullet> bullets = new LinkedList<>();
+    LinkedList<Enemy> enemies = new LinkedList<>();
+
+    public void printPos(Circle bullet){
+        System.out.println(" Layout X: " + bullet.getTranslateX() + " Layout Y: " + bullet.getTranslateY());
     }
+    public void removeNext(){
+        if (bullets.size() > 0) {
+            viewPort.getChildren().remove(bullets.getFirst());
+            bullets.removeFirst();
+        }
+
+
+        }
 
     public void onClick() throws InterruptedException {
+        double newX = diffX;
+        double newY = diffY;
+//        System.out.println("Y: " + diffY);
+//        System.out.println("X: " + diffX);
+//        System.out.println(rotation);
 
+        boolean done = false;
 
-    bullets.addLast(new Bullet(15, barrelPos[0], barrelPos[1]));
+        while(!done){
+            newX = newX*1.5;
+            newY = newY*1.5;
+
+            if (Math.sqrt(Math.pow(newX, 2) + Math.pow(newY, 2)) > 750){
+                done = true;
+            }
+        }
+
+    bullets.addLast(new Bullet(15, barrelPos[0]+6, barrelPos[1]+31, Color.BLUE));
     viewPort.getChildren().add(bullets.getLast());
 
         TranslateTransition translateTransition = new TranslateTransition();
@@ -67,19 +92,8 @@ public void removeNext(){
 
 
 
-        double newX = diffX;
-        double newY = diffY;
-        boolean done = false;
 
-        while(!done){
-            newX = newX*1.5;
-            newY = newY*1.5;
 
-            if (Math.abs(newX) > 300 || Math.abs(newY) > 600){
-                done = true;
-            }
-        }
-        System.out.println("newX: " + newX + "NewY: " + newY);
 
         translateTransition.setByX(newX);
         translateTransition.setByY(newY);
@@ -101,6 +115,12 @@ public void removeNext(){
         startButton.setDisable(true);
         startButton.setVisible(false);
 
+        gameOver = false;
+
+
+
+
+
         viewPort.setOnMouseMoved(event -> {
 
             mousePosX = event.getSceneX();
@@ -120,22 +140,30 @@ public void removeNext(){
 
 
             //Rotation based on mouse
+            double oldDiffX = diffX;
+            double oldDiffY = diffY;
 
             diffY = mousePosY - barrelPos[1];
             diffX = mousePosX - barrelPos[0];
 
-            if (diffX != 0){
-                rotation = Math.toDegrees(Math.atan(diffY / diffX)) - 90;
-                if (rotation < 90 || (rotation > 270 && rotation < 360)) {
-                    barrel.setRotate(rotation);
-                }else{
-                    barrel.setRotate(90);
-                }
-            }else{
-                barrel.setRotate(0);
+            if (diffY > 30) {
+                diffY = 30;
             }
 
-            //barrel.setRotate((mousePosX - 300) / 3.33333);
+            if (diffY > -25 && Math.abs(diffX) < 90){
+                diffX = oldDiffX;
+                diffY = oldDiffY;
+            }
+
+
+            if (diffX != 0){
+                rotation = Math.toDegrees(Math.atan(diffY / diffX)) + 90;
+
+                barrel.setRotate(rotation);
+
+            }
+
+
 
 
         });
@@ -144,10 +172,45 @@ public void removeNext(){
 
 
     }
+    public void removeNextEnemy(){
+        if (enemies.size() > 0) {
+            viewPort.getChildren().remove(enemies.getFirst());
+            enemies.removeFirst();
+        }
 
-    //430 - 450
+    }
+    public void spawnEnemy(){
+
+    double xSpawn = random.nextDouble(50, 550);
+    double ySpawn = random.nextDouble(25, 100);
+
+        enemies.addLast(new Enemy(15, xSpawn, ySpawn, Color.RED));
+        viewPort.getChildren().add(enemies.getLast());
+
+        TranslateTransition enemyTranslation = new TranslateTransition();
+        enemyTranslation.setDuration(Duration.millis(3500));
+        enemyTranslation.setInterpolator(Interpolator.LINEAR);
+        enemyTranslation.setNode(enemies.getLast());
 
 
+
+
+
+
+
+
+        enemyTranslation.setToX(300 - xSpawn);
+        enemyTranslation.setToY(505 - ySpawn);
+        enemyTranslation.setOnFinished(e -> removeNextEnemy());
+        enemyTranslation.setCycleCount(0);
+
+
+        //Setting auto reverse value to false
+        enemyTranslation.setAutoReverse(false);
+
+        //Playing the animation
+        enemyTranslation.play();
+    }
 
     public void setBarrel(){
 
@@ -163,4 +226,64 @@ public void removeNext(){
 
 
     }
+
+    public void bulletHit(){
+        for (Bullet bullet:
+             bullets) {
+            for (Enemy enemy :
+                    enemies) {
+
+                if(bullet.isTouchingCircle(enemy.getRealPositionX(), enemy.getRealPositionY(), enemy.getRadius())){
+                    enemy.setAlive(false);
+                    viewPort.getChildren().remove(enemy);
+                }
+
+
+            }
+
+        }
+    }
+
+    public void tickTimer() {
+        if (!gameOver) {
+            bulletHit();
+            if (random.nextInt(0, odds) == 0) {
+                spawnEnemy();
+                odds = 8;
+            } else {
+                odds--;
+            }
+            gameOver = isDead();
+        }
+    }
+
+    public boolean isDead(){
+        for (Enemy enemy :
+                enemies) {
+            if (enemy.getRealPositionY() > 485 && enemy.getIsAlive()){
+                destroyAll();
+                startButton.setVisible(true);
+                startButton.setDisable(false);
+                startButton.setText("Game Over!\nTry again?");
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void destroyAll(){
+        for (Bullet bullet :
+                bullets) {
+            viewPort.getChildren().remove(bullet);
+        }
+        for (Enemy enemy :
+                enemies) {
+            viewPort.getChildren().remove(enemy);
+        }
+        viewPort.setOnMouseMoved(null);
+
+    enemies.clear();
+    bullets.clear();
+    }
+
 }
