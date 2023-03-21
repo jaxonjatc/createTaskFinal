@@ -28,11 +28,14 @@ public class HelloController {
     Things to still implement
 
     Easy
+    -Make methods take inputs rather than use global variables
+    -Clean up code
     -Waves of enemies of increasing difficulty (quantity and speed)
     -Score counter
     -possible Better collision detection
     (Up the tick speed and just multiply the odds of spawning
     (create variable for default odds))
+
 
     Medium
     -Weapon selection
