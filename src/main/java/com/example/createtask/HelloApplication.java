@@ -15,7 +15,7 @@ public class HelloApplication extends Application {
     public void start(Stage stage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("hello-view.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 600, 505);
-        stage.setTitle("Hello!");
+        stage.setTitle("TankGame");
         stage.setScene(scene);
 
         HelloController controller = fxmlLoader.getController();
@@ -33,7 +33,7 @@ public class HelloApplication extends Application {
             }
         };
 
-        timer.scheduleAtFixedRate(frameCounter, 1000, 150);
+        timer.scheduleAtFixedRate(frameCounter, 1000, 20);
 
 
         stage.show();

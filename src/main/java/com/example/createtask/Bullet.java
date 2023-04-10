@@ -12,6 +12,8 @@ public class Bullet extends Circle {
     private double startingY;
 
     private double radius;
+    private boolean isAlive;
+
 
 
 
@@ -26,6 +28,7 @@ public class Bullet extends Circle {
         setLayoutY(startingY);
 
         setFill(color);
+        isAlive = true;
     }
 
 
@@ -48,9 +51,16 @@ public class Bullet extends Circle {
 
     public boolean isTouchingCircle(double x, double y, double radius){
 
-        return Math.abs(getRealPositionX() - x) < radius && Math.abs(getRealPositionY() - y) < 2.25*radius;
+        return Math.abs(getRealPositionX() - x) < radius && Math.abs(getRealPositionY() - y) < 2.05*radius;
 
     }
 
+    public boolean getIsAlive() {
+        return isAlive;
+    }
 
+
+    public void setAlive(boolean alive) {
+        isAlive = alive;
+    }
 }
